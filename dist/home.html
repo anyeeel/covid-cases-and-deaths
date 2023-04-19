@@ -54,6 +54,7 @@
           <li><a class="nav-link scrollto" href="#about">About</a></li>
           <li><a class="nav-link scrollto" href="#services">Vaccines</a></li>
           <li><a class="nav-link scrollto" href="#departments">Prevention</a></li>
+          <li><a id="logout" href="#">Logout</a></li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
@@ -506,5 +507,50 @@
   <script src="assets/js/main.js"></script>
 
 </body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
 
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+apiKey: "AIzaSyBet-_DiY9gCkFcYKJFJEmK19Gtjvyaf5Y",
+authDomain: "ababon-babanto-cs1.firebaseapp.com",
+projectId: "ababon-babanto-cs1",
+storageBucket: "ababon-babanto-cs1.appspot.com",
+messagingSenderId: "902696087277",
+appId: "1:902696087277:web:1c862140b65b223fabe6e4",
+measurementId: "G-23607BRBTR"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+console.log(app);
+
+//----- Logout code start	  
+document.getElementById("logout").addEventListener("click", function() {
+		  signOut(auth).then(() => {
+			  // Sign-out successful.
+			  console.log('Sign-out successful.');
+			  alert('logged out succesfully');
+
+                setTimeout(function(){
+                    window.location.href = "index.html";
+                }, 2000);
+                // ...
+
+			}).catch((error) => {
+			  // An error happened.
+			  console.log('An error happened.');
+			});		  		  
+	  });
+	  //----- End
+</script>
 </html>
