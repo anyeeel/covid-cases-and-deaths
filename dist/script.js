@@ -1,114 +1,62 @@
-var selectedRow = null;
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
 
-//Show Alerts
-function showAlert(message, className){
-    const div = document.createElement("div");
-    div.className = `alert alert-${className}`;
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBet-_DiY9gCkFcYKJFJEmK19Gtjvyaf5Y",
+  authDomain: "ababon-babanto-cs1.firebaseapp.com",
+  projectId: "ababon-babanto-cs1",
+  storageBucket: "ababon-babanto-cs1.appspot.com",
+  messagingSenderId: "902696087277",
+  appId: "1:902696087277:web:1c862140b65b223fabe6e4",
+  measurementId: "G-23607BRBTR"
+};
 
-    div.appendChild(document.createTextNode(message));
-    const container = document.querySelector(".container");
-    const main = document.querySelector(".main");
-    container.insertBefore(div, main);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+console.log(app);
+const db = getFirestore(app);
 
-    setTimeout(() => document.querySelector(".alert").remove(), 3000);
-}
+// Get a reference to the form element
+const form = document.getElementById("form");
 
-//Clear All Fields
-function clearFields(){
-    document.querySelector("#firstName").value = "";
-    document.querySelector("#lastName").value = "";
-    document.querySelector("#rollNo").value = "";
-}
+// Add an event listener to the form
+form.addEventListener("submit", (e) => {
+  e.preventDefault(); // Prevent the default form submission behavior
 
-/// Add Data Button
-document.querySelector("#add-data-btn").addEventListener("click", () => {
-    $('#add-data-modal').modal('show');
+  // Get the form data
+  const country = document.getElementById("country").value;
+  const cases = document.getElementById("Cases").value;
+  const population = document.getElementById("Population").value;
+  const deaths = document.getElementById("Deaths").value;
+  const active = document.getElementById("Active").value;
+  const recovered = document.getElementById("Recovered").value;
+  const tests = document.getElementById("Test").value;
+
+  // Create a new object with the form data
+  const newData = {
+    country: country,
+    cases: cases,
+    population: population,
+    deaths: deaths,
+    active: active,
+    recovered: recovered,
+    tests: tests,
+  };
+
+  // Save the new data to the Firestore database
+  addDoc(collection(db, "covid"), newData);
+
+  // Reset the form
+  form.reset();
+
+  // Hide the popup form
+  const popup = document.getElementById("popup");
+  popup.style.display = "none";
 });
-
-// Add Data Form Submit
-document.querySelector("#student-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    //Get Form Values
-    const firstName = document.querySelector("#firstName").value;
-    const lastName = document.querySelector("#lastName").value;
-    const rollNo = document.querySelector("#rollNo").value;
-
-    //Validate
-    if(firstName == "" || lastName == "" || rollNo == ""){
-        showAlert("Please fill in all fields", "danger");
-    }
-    else{
-        if(selectedRow == null){
-            const list = document.querySelector("#student-list");
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-            <td>${firstName}</td>
-            <td>${lastName}</td>
-            <td>${rollNo}</td>
-            <td>
-            <a href="#" class="btn btn-warning btn-sm edit">Edit</a>
-            <a href="#" class="btn btn-danger btn-sm delete">Delete</a>
-            `;
-            
-            list.appendChild(row);
-            selectedRow = null;
-            showAlert("Student Added", "success");
-        }
-        else{
-            selectedRow.children[0].textContent = firstName;
-            selectedRow.children[1].textContent = lastName;
-            selectedRow.children[2].textContent = rollNo;
-            selectedRow = null;
-            showAlert("Student Info Edited", "info");
-        }
-
-        clearFields();
-        $('#add-data-modal').modal('hide');
-    }
-});
-
-document.querySelector("#student-list").addEventListener("click", (e) => {
-    target = e.target;
-    if (target.classList.contains("edit")) {
-        selectedRow = target.parentElement.parentElement;
-        document.querySelector("#editFirstName").value = selectedRow.children[0].textContent;
-        document.querySelector("#editLastName").value = selectedRow.children[1].textContent;
-        document.querySelector("#editRollNo").value = selectedRow.children[2].textContent;
-        $('#edit-modal').modal('show'); // show the modal form
-    }
-});
-
-document.querySelector("#edit-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    //Get Form Values
-    const firstName = document.querySelector("#editFirstName").value;
-    const lastName = document.querySelector("#editLastName").value;
-    const rollNo = document.querySelector("#editRollNo").value;
-
-    //Validate
-    if (firstName == "" || lastName == "" || rollNo == "") {
-        showAlert("Please fill in all fields", "danger");
-    } else {
-        selectedRow.children[0].textContent = firstName;
-        selectedRow.children[1].textContent = lastName;
-        selectedRow.children[2].textContent = rollNo;
-        selectedRow = null;
-        showAlert("Student Info Edited", "info");
-        $('#edit-modal').modal('hide'); // hide the modal form
-    }
-
-    clearFields();
-});
-
-
-//Delete Data
-document.querySelector("#student-list").addEventListener("click", (e) =>{
-    target = e.target;
-    if(target.classList.contains("delete")){
-        target.parentElement.parentElement.remove();
-        showAlert("Student Data Deleted", "danger");
-    }
-})
