@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jscharting.com/latest/jscharting.js"></script>
     <title>COVID Cases</title>
+    </head>
     <style>
         body {
           display: flex;
@@ -186,9 +187,9 @@
             <button type="button" onclick="hideEditForm()">Cancel</button>
           </form>
         </div>
+       
       </div>
-      <canvas id="covid-chart" width="400" height="200"></canvas>
-
+ <div id="chart-container" style="width: 100%; height: 500px; margin: 2rem 0;"></div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script>
@@ -334,41 +335,55 @@
   renderChart(chartData);
 });
 
-              let chart;
-
-function renderChart(data) {
-  const ctx = document.getElementById("covid-chart").getContext("2d");
-  if (chart) {
-    chart.destroy();
-  }
-  chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: data.map((item) => item.country),
-      datasets: [
-        {
-          label: "COVID Cases",
-          data: data.map((item) => item.cases),
-          backgroundColor: "#4a90e2",
-          borderColor: "#3d7ccd",
-          borderWidth: 1,
-        },
-      ],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
+function renderChart(chartData) {
+  const chartOptions = {
+    targetElement: 'chart-container',
+    type: 'bar stacked',
+    series: [
+      {
+        name: 'Total Cases',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.cases),
+        })),
       },
+      {
+        name: 'Total Deaths',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.deaths),
+        })),
+      },
+      {
+        name: 'Total Recovered',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.recovered),
+        })),
+      },
+      {
+        name: 'Active Cases',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.active),
+        })),
+      },
+    ],
+    xAxis: {
+      labelText: 'Country',
     },
-  });
+    yAxis: {
+      labelText: 'Number of Cases',
+    },
+    legend: {
+      template: '%name',
+      position: 'bottom',
+    },
+  };
+  new JSC.Chart(chartOptions);
 }
 
-            </script>
-          </body>
-
-
-
-        </html>
+</script>
+</body>
+</html>
         
