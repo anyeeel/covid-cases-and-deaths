@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>COVID Cases</title>
     <style>
         body {
@@ -141,15 +142,24 @@
     <form>
       <label for="country">Country:</label>
       <input type="text" id="country" name="country" /><br />
-      <label for="cases">Cases:</label>
+      <label for="cases">Total Cases:</label>
       <input type="text" id="cases" name="cases" /><br />
+      <label for="deaths">Total Deaths:</label>
+      <input type="text" id="deaths" name="deaths" /><br />
+      <label for="recovered">Total Recovered:</label>
+      <input type="text" id="recovered" name="recovered" /><br />
+      <label for="active">Active Cases:</label>
+      <input type="text" id="active" name="active" /><br />
       <button type="button" onclick="addData()">Add Data</button>
     </form>
     <table>
       <thead>
         <tr>
           <th>Country</th>
-          <th>Cases</th>
+          <th>Total Cases</th>
+          <th>Total Deaths</th>
+          <th>Total Recovered</th>
+          <th>Active Cases</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -164,14 +174,20 @@
             <input type="hidden" id="edit-id" />
             <label for="edit-country">Country:</label>
             <input type="text" id="edit-country" name="country" /><br />
-            <label for="edit-cases">Cases:</label>
+            <label for="edit-cases">Total Cases:</label>
             <input type="text" id="edit-cases" name="cases" /><br />
+            <label for="edit-deaths">Total Deaths:</label>
+            <input type="text" id="edit-deaths" name="deaths" /><br />
+            <label for="edit-recovered">Total Recovered:</label>
+            <input type="text" id="edit-recovered" name="recovered" /><br />
+            <label for="edit-active">Active Cases:</label>
+            <input type="text" id="edit-active" name="active" /><br />
             <button type="button" onclick="submitEditForm()">Update Data</button>
             <button type="button" onclick="hideEditForm()">Cancel</button>
           </form>
         </div>
       </div>
-      
+      <canvas id="covid-chart" width="400" height="200"></canvas>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -203,10 +219,16 @@
       function addData() {
         const country = document.getElementById("country").value;
         const cases = document.getElementById("cases").value;
+         const deaths = document.getElementById("deaths").value;
+          const recovered = document.getElementById("recovered").value;
+           const active = document.getElementById("active").value;
         db.collection("covid-cases")
           .add({
             country: country,
             cases: cases,
+            deaths: deaths,
+            recovered: recovered,
+            active: active,
           })
           .then((docRef) => {
             console.log("Document written with ID: ", docRef.id);
@@ -218,11 +240,14 @@
       }
 
       // Show edit form
-      function showEditForm(id, country, cases) {
+      function showEditForm(id, country, cases, deaths, recovered, active) {
         document.getElementById("edit-form").style.display = "block";
         document.getElementById("edit-id").value = id;
         document.getElementById("edit-country").value = country;
         document.getElementById("edit-cases").value = cases;
+        document.getElementById("edit-deaths").value = deaths;
+        document.getElementById("edit-recovered").value = recovered;
+        document.getElementById("edit-active").value = active;
       }
 
             // Submit the edit form
@@ -230,7 +255,10 @@
                 const id = document.getElementById("edit-id").value;
                 const country = document.getElementById("edit-country").value;
                 const cases = document.getElementById("edit-cases").value;
-                updateData(id, { country: country, cases: cases });
+                const deaths = document.getElementById("edit-deaths").value;
+                const recovered = document.getElementById("edit-recovered").value;
+                const active = document.getElementById("edit-active").value;
+                updateData(id, { country: country, cases: cases, deaths: deaths, recovered: recovered, active: active });
                 document.getElementById("edit-form").style.display = "none";
               }
         
@@ -265,35 +293,82 @@
         
               // Get data from Firestore
               db.collection("covid-cases").onSnapshot((querySnapshot) => {
-                const covidCasesTable = document.getElementById("covid-cases");
-                covidCasesTable.innerHTML = "";
-                querySnapshot.forEach((doc) => {
-                  const data = doc.data();
-                  const row = document.createElement("tr");
-                  const countryCell = document.createElement("td");
-                  const casesCell = document.createElement("td");
-                  const actionsCell = document.createElement("td");
-                  const updateButton = document.createElement("button");
-                  const deleteButton = document.createElement("button");
-                  countryCell.textContent = data.country;
-                  casesCell.textContent = data.cases;
-                  updateButton.textContent = "Update";
-                  deleteButton.textContent = "Delete";
-                  updateButton.addEventListener("click", () => {
-                    showEditForm(doc.id, data.country, data.cases);
-                  });
-                  deleteButton.addEventListener("click", () => {
-                    deleteData(doc.id);
-                  });
-                  actionsCell.appendChild(updateButton);
-                  actionsCell.appendChild(deleteButton);
-                  row.appendChild(countryCell);
-                  row.appendChild(casesCell);
-                  row.appendChild(actionsCell);
-                  covidCasesTable.appendChild(row);
-                });
-              });
+  const covidCasesTable = document.getElementById("covid-cases");
+  covidCasesTable.innerHTML = "";
+  const chartData = [];
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    chartData.push({ country: data.country, cases: data.cases, deaths: data.deaths, recovered: data.recovered, active: data.active });
+    const row = document.createElement("tr");
+    const countryCell = document.createElement("td");
+    const casesCell = document.createElement("td");
+    const deathsCell = document.createElement("td");
+    const recoveredCell = document.createElement("td");
+    const activeCell= document.createElement("td");
+    const actionsCell = document.createElement("td");
+    const updateButton = document.createElement("button");
+    const deleteButton = document.createElement("button");
+    countryCell.textContent = data.country;
+    casesCell.textContent = data.cases;
+    deathsCell.textContent = data.deaths;
+    recoveredCell.textContent = data.recovered;
+    activeCell.textContent = data.active;
+    updateButton.textContent = "Update";
+    deleteButton.textContent = "Delete";
+    updateButton.addEventListener("click", () => {
+      showEditForm(doc.id, data.country, data.cases);
+    });
+    deleteButton.addEventListener("click", () => {
+      deleteData(doc.id);
+    });
+    actionsCell.appendChild(updateButton);
+    actionsCell.appendChild(deleteButton);
+    row.appendChild(countryCell);
+    row.appendChild(casesCell);
+    row.appendChild(deathsCell);
+    row.appendChild(recoveredCell);
+    row.appendChild(activeCell);
+    row.appendChild(actionsCell);
+    covidCasesTable.appendChild(row);
+  });
+  renderChart(chartData);
+});
+
+              let chart;
+
+function renderChart(data) {
+  const ctx = document.getElementById("covid-chart").getContext("2d");
+  if (chart) {
+    chart.destroy();
+  }
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: data.map((item) => item.country),
+      datasets: [
+        {
+          label: "COVID Cases",
+          data: data.map((item) => item.cases),
+          backgroundColor: "#4a90e2",
+          borderColor: "#3d7ccd",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+}
+
             </script>
           </body>
+
+
+
         </html>
         
