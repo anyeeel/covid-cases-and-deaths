@@ -147,7 +147,27 @@
         border: 1px solid #888;
         width: 80%;
       }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+      }
       
+      .pagination button {
+        background-color: #4a90e2;
+        border: none;
+        border-radius: 3px;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        margin-right: 0.5rem;
+      }
+      
+      .pagination button:hover {
+        background-color: #3d7ccd;
+      }
+       
     </style>
   
   <body>
@@ -187,7 +207,12 @@
       <tbody id="covid-cases">
       </tbody>
     </table>
-
+    <div class="pagination">
+      <button id="prev-btn" onclick="prevPage()" disabled>Previous</button>
+      <button id="next-btn" onclick="nextPage()">Next</button>
+    </div>
+    
+    
     <div id="edit-form" class="modal">
       <div class="modal-content">
         <h2>Edit Case</h2>
@@ -239,6 +264,7 @@
           confirmButtonText: 'OK',
         });
       }
+ 
       
       // Add data to Firestore
       const addButton = document.getElementById("add-button");
@@ -356,6 +382,49 @@ function clearEditForm() {
                 }
         
               // Get data from Firestore
+              let currentPage = 1;
+const rowsPerPage = 10;
+
+function updateTableDisplay() {
+  const covidCasesTable = document.getElementById("covid-cases");
+  for (let i = 0; i < covidCasesTable.rows.length; i++) {
+    if (i >= (currentPage - 1) * rowsPerPage && i < currentPage * rowsPerPage) {
+      covidCasesTable.rows[i].style.display = "table-row";
+    } else {
+      covidCasesTable.rows[i].style.display = "none";
+    }
+  }
+  updatePaginationButtons();
+}
+
+function updatePaginationButtons() {
+  const covidCasesTable = document.getElementById("covid-cases");
+  const prevButton = document.getElementById("prev-btn");
+  const nextButton = document.getElementById("next-btn");
+
+  if (currentPage === 1) {
+    prevButton.disabled = true;
+  } else {
+    prevButton.disabled = false;
+  }
+
+  if (currentPage * rowsPerPage >= covidCasesTable.rows.length) {
+    nextButton.disabled = true;
+  } else {
+    nextButton.disabled = false;
+  }
+}
+
+function nextPage() {
+  currentPage++;
+  updateTableDisplay();
+}
+
+function prevPage() {
+  currentPage--;
+  updateTableDisplay();
+}
+
               db.collection("covid-cases").onSnapshot((querySnapshot) => {
   const covidCasesTable = document.getElementById("covid-cases");
   covidCasesTable.innerHTML = "";
@@ -396,6 +465,7 @@ function clearEditForm() {
     covidCasesTable.appendChild(row);
   });
   renderChart(chartData);
+  updateTableDisplay();
 });
 
 function renderChart(chartData) {
