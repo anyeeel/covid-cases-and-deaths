@@ -400,79 +400,95 @@ function clearEditForm() {
 
 function renderChart(chartData) {
   const baseChartOptions = {
-    type: "bar",
+    type: 'bar',
     xAxis: {
-      labelText: "Country",
+      labelText: 'Country',
     },
     yAxis: {
-      labelText: "Number of Cases",
+      labelText: 'Number of Cases',
     },
     legend: {
       visible: false,
     },
+    defaultPointTooltip: '{%yValue:,.0f}',
     defaultPoint_tooltip: '<b>%seriesName</b><br>%name: %y',
   };
 
   const casesChartOptions = {
     ...baseChartOptions,
-    targetElement: "chart-container-cases",
+    targetElement: 'chart-container-cases',
     series: [
       {
-        name: "Total Cases",
+        name: 'Total Cases',
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.cases),
         })),
       },
     ],
+    defaultPoint: {
+      color: '#4a90e2',
+    },
   };
   new JSC.Chart({ ...casesChartOptions, title_label_text: "Total Cases" });
 
+
   const deathsChartOptions = {
     ...baseChartOptions,
-    targetElement: "chart-container-deaths",
+    targetElement: 'chart-container-deaths',
     series: [
       {
-        name: "Total Deaths",
+        name: 'Total Deaths',
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.deaths),
         })),
       },
     ],
+    defaultPoint: {
+      color: '#e74c3c',
+    },
   };
   new JSC.Chart({ ...deathsChartOptions, title_label_text: "Total Deaths" });
 
+
   const recoveredChartOptions = {
     ...baseChartOptions,
-    targetElement: "chart-container-recovered",
+    targetElement: 'chart-container-recovered',
     series: [
       {
-        name: "Total Recovered",
+        name: 'Total Recovered',
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.recovered),
         })),
       },
     ],
+    defaultPoint: {
+      color: '#27ae60',
+    },
   };
   new JSC.Chart({ ...recoveredChartOptions, title_label_text: "Total Recovered" });
 
   const activeChartOptions = {
     ...baseChartOptions,
-    targetElement: "chart-container-active",
+    targetElement: 'chart-container-active',
     series: [
       {
-        name: "Active Cases",
+        name: 'Active Cases',
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.active),
         })),
       },
     ],
+    defaultPoint: {
+      color: '#f39c12',
+    },
   };
   new JSC.Chart({ ...activeChartOptions, title_label_text: "Active Cases" });
 }
+
 
 </script>
 </body>
