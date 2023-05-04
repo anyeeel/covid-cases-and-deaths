@@ -24,35 +24,45 @@
         }
   
         form {
-          margin-bottom: 2rem;
+          display: flex;
+          flex-direction: column;
+          width: 50%;
           background-color: #686d6b86;
-          border-radius: 5px;
-          padding: 1rem;
+          border-radius: 0px;
+          padding: 2rem;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-  
+      
         form label {
-          display: inline-block;
-          width: 80px;
-          color: #fff;
-        }
-  
-        form input {
           margin-bottom: 0.5rem;
-          padding: 0.25rem 0.5rem;
-          border: 1px solid #ccc;
-          border-radius: 3px;
+          font-size: 15px;
+          color: #fff;
+          font-weight: bold;
         }
-  
+      
+        form input {
+          margin-bottom: 1rem;
+          padding: 0.5rem 1rem;
+          font-size: 18px;
+          border: none;
+          border-radius: 3px;
+          background-color: #fff;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+      
         button[type="button"] {
+          margin-top: 1rem;
+          align-self: center;
           background-color: #4a90e2;
           border: none;
           border-radius: 3px;
           color: #fff;
           padding: 0.5rem 1rem;
           cursor: pointer;
+          font-size: 15px;
+          font-weight: bold;
         }
-  
+      
         button[type="button"]:hover {
           background-color: #3d7ccd;
         }
@@ -63,6 +73,7 @@
           background-color: #fff;
           border-radius: 5px;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          margin-top: 60px;
         }
   
         th {
@@ -128,7 +139,7 @@
         background-color: rgba(0, 0, 0, 0.5);
         color: #f2f2f2;
       }
-
+      
       .modal-content {
         background-color: #383737;
         margin: 15% auto;
@@ -136,23 +147,32 @@
         border: 1px solid #888;
         width: 80%;
       }
+      
     </style>
   
   <body>
     <h1>COVID Cases</h1>
-    <form>
-      <label for="country">Country:</label>
-      <input type="text" id="country" name="country" /><br />
-      <label for="cases">Total Cases:</label>
-      <input type="text" id="cases" name="cases" /><br />
-      <label for="deaths">Total Deaths:</label>
-      <input type="text" id="deaths" name="deaths" /><br />
-      <label for="recovered">Total Recovered:</label>
-      <input type="text" id="recovered" name="recovered" /><br />
-      <label for="active">Active Cases:</label>
-      <input type="text" id="active" name="active" /><br />
-      <button type="button" onclick="addData()">Add Data</button>
-    </form>
+    <button id="add-button" type="button">Add Data</button>
+    <div id="add-form-modal" class="modal">
+      <div class="modal-content">
+        <h2>Add Data</h2>
+        <form>
+          <label for="country">Country:</label>
+          <input type="text" id="country" name="country" />
+          <label for="cases">Total Cases:</label>
+          <input type="text" id="cases" name="cases" />
+          <label for="deaths">Total Deaths:</label>
+          <input type="text" id="deaths" name="deaths" />
+          <label for="recovered">Total Recovered:</label>
+          <input type="text" id="recovered" name="recovered" />
+          <label for="active">Active Cases:</label>
+          <input type="text" id="active" name="active" />
+          <button type="button" onclick="addData()">Add Data</button>
+          <button type="button" onclick="closeAddForm()">Cancel</button>
+        </form>
+      </div>
+    </div>
+    
     <table>
       <thead>
         <tr>
@@ -169,25 +189,26 @@
     </table>
 
     <div id="edit-form" class="modal">
-        <div class="modal-content">
-          <h2>Edit Case</h2>
-          <form>
-            <input type="hidden" id="edit-id" />
-            <label for="edit-country">Country:</label>
-            <input type="text" id="edit-country" name="country" /><br />
-            <label for="edit-cases">Total Cases:</label>
-            <input type="text" id="edit-cases" name="cases" /><br />
-            <label for="edit-deaths">Total Deaths:</label>
-            <input type="text" id="edit-deaths" name="deaths" /><br />
-            <label for="edit-recovered">Total Recovered:</label>
-            <input type="text" id="edit-recovered" name="recovered" /><br />
-            <label for="edit-active">Active Cases:</label>
-            <input type="text" id="edit-active" name="active" /><br />
-            <button type="button" onclick="submitEditForm()">Update Data</button>
-            <button type="button" onclick="hideEditForm()">Cancel</button>
-          </form>
-        </div>
-       
+      <div class="modal-content">
+        <h2>Edit Case</h2>
+        <form>
+          <input type="hidden" id="edit-id" />
+          <label for="edit-country">Country:</label>
+          <input type="text" id="edit-country" name="country" />
+          <label for="edit-cases">Total Cases:</label>
+          <input type="text" id="edit-cases" name="cases" />
+          <label for="edit-deaths">Total Deaths:</label>
+          <input type="text" id="edit-deaths" name="deaths" />
+          <label for="edit-recovered">Total Recovered:</label>
+          <input type="text" id="edit-recovered" name="recovered" />
+          <label for="edit-active">Active Cases:</label>
+          <input type="text" id="edit-active" name="active" />
+          <button type="button" onclick="submitEditForm()">Update Data</button>
+          <button type="button" onclick="cancelEditForm()">Cancel</button>
+        </form>
+      </div>
+    </div>
+    
       </div>
  <div id="chart-container" style="width: 100%; height: 500px; margin: 2rem 0;"></div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -217,52 +238,91 @@
       }
       
       // Add data to Firestore
-      function addData() {
-        const country = document.getElementById("country").value;
-        const cases = document.getElementById("cases").value;
-         const deaths = document.getElementById("deaths").value;
-          const recovered = document.getElementById("recovered").value;
-           const active = document.getElementById("active").value;
-        db.collection("covid-cases")
-          .add({
-            country: country,
-            cases: cases,
-            deaths: deaths,
-            recovered: recovered,
-            active: active,
-          })
-          .then((docRef) => {
-            console.log("Document written with ID: ", docRef.id);
-            showAlert("New data successfully added.");
-          })          
-          .catch((error) => {
-            console.error("Error adding document: ", error);
-          });
-      }
+      const addButton = document.getElementById("add-button");
+const addFormModal = document.getElementById("add-form-modal");
 
-      // Show edit form
-      function showEditForm(id, country, cases, deaths, recovered, active) {
-        document.getElementById("edit-form").style.display = "block";
-        document.getElementById("edit-id").value = id;
-        document.getElementById("edit-country").value = country;
-        document.getElementById("edit-cases").value = cases;
-        document.getElementById("edit-deaths").value = deaths;
-        document.getElementById("edit-recovered").value = recovered;
-        document.getElementById("edit-active").value = active;
-      }
+function openAddForm() {
+  addFormModal.style.display = "block";
+}
 
-            // Submit the edit form
-            function submitEditForm() {
-                const id = document.getElementById("edit-id").value;
-                const country = document.getElementById("edit-country").value;
-                const cases = document.getElementById("edit-cases").value;
-                const deaths = document.getElementById("edit-deaths").value;
-                const recovered = document.getElementById("edit-recovered").value;
-                const active = document.getElementById("edit-active").value;
-                updateData(id, { country: country, cases: cases, deaths: deaths, recovered: recovered, active: active });
-                document.getElementById("edit-form").style.display = "none";
-              }
-        
+function closeAddForm() {
+  addFormModal.style.display = "none";
+}
+
+addButton.addEventListener("click", openAddForm);
+
+
+
+// Add data to Firestore
+function addData() {
+  const country = document.getElementById("country").value;
+  const cases = document.getElementById("cases").value;
+  const deaths = document.getElementById("deaths").value;
+  const recovered = document.getElementById("recovered").value;
+  const active = document.getElementById("active").value;
+  db.collection("covid-cases")
+    .add({
+      country: country,
+      cases: cases,
+      deaths: deaths,
+      recovered: recovered,
+      active: active,
+    })
+    .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+      showAlert("New data successfully added.");
+      document.getElementById("country").value = "";
+      document.getElementById("cases").value = "";
+      document.getElementById("deaths").value = "";
+      document.getElementById("recovered").value = "";
+      document.getElementById("active").value = "";
+    })
+    .catch((error) => {
+      console.error("Error adding document: ", error);
+    });
+}
+
+
+// Show edit form
+function showEditForm(id, country, cases, deaths, recovered, active) {
+  document.getElementById("edit-form").style.display = "block";
+  document.getElementById("edit-id").value = id;
+  document.getElementById("edit-country").value = country;
+  document.getElementById("edit-cases").value = cases;
+  document.getElementById("edit-deaths").value = deaths;
+  document.getElementById("edit-recovered").value = recovered;
+  document.getElementById("edit-active").value = active;
+}
+
+// Submit the edit form
+function submitEditForm() {
+  const id = document.getElementById("edit-id").value;
+  const country = document.getElementById("edit-country").value;
+  const cases = document.getElementById("edit-cases").value;
+  const deaths = document.getElementById("edit-deaths").value;
+  const recovered = document.getElementById("edit-recovered").value;
+  const active = document.getElementById("edit-active").value;
+  updateData(id, { country: country, cases: cases, deaths: deaths, recovered: recovered, active: active });
+  document.getElementById("edit-form").style.display = "none";
+  clearEditForm();
+}
+
+// Cancel the edit form
+function cancelEditForm() {
+  document.getElementById("edit-form").style.display = "none";
+  clearEditForm();
+}
+
+// Clear the edit form
+function clearEditForm() {
+  document.getElementById("edit-id").value = "";
+  document.getElementById("edit-country").value = "";
+  document.getElementById("edit-cases").value = "";
+  document.getElementById("edit-deaths").value = "";
+  document.getElementById("edit-recovered").value = "";
+  document.getElementById("edit-active").value = "";
+}
+
               // Update data in Firestore
               function updateData(id, data) {
                 db.collection("covid-cases")
