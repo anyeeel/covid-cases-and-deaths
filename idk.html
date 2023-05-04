@@ -208,9 +208,12 @@
         </form>
       </div>
     </div>
-    
       </div>
- <div id="chart-container" style="width: 100%; height: 500px; margin: 2rem 0;"></div>
+      <div id="chart-container-cases" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+      <div id="chart-container-deaths" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+      <div id="chart-container-recovered" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+      <div id="chart-container-active" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+      
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script>
@@ -396,51 +399,79 @@ function clearEditForm() {
 });
 
 function renderChart(chartData) {
-  const chartOptions = {
-    targetElement: 'chart-container',
-    type: 'bar stacked',
+  const baseChartOptions = {
+    type: "bar",
+    xAxis: {
+      labelText: "Country",
+    },
+    yAxis: {
+      labelText: "Number of Cases",
+    },
+    legend: {
+      visible: false,
+    },
+    defaultPoint_tooltip: '<b>%seriesName</b><br>%name: %y',
+  };
+
+  const casesChartOptions = {
+    ...baseChartOptions,
+    targetElement: "chart-container-cases",
     series: [
       {
-        name: 'Total Cases',
+        name: "Total Cases",
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.cases),
         })),
       },
+    ],
+  };
+  new JSC.Chart({ ...casesChartOptions, title_label_text: "Total Cases" });
+
+  const deathsChartOptions = {
+    ...baseChartOptions,
+    targetElement: "chart-container-deaths",
+    series: [
       {
-        name: 'Total Deaths',
+        name: "Total Deaths",
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.deaths),
         })),
       },
+    ],
+  };
+  new JSC.Chart({ ...deathsChartOptions, title_label_text: "Total Deaths" });
+
+  const recoveredChartOptions = {
+    ...baseChartOptions,
+    targetElement: "chart-container-recovered",
+    series: [
       {
-        name: 'Total Recovered',
+        name: "Total Recovered",
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.recovered),
         })),
       },
+    ],
+  };
+  new JSC.Chart({ ...recoveredChartOptions, title_label_text: "Total Recovered" });
+
+  const activeChartOptions = {
+    ...baseChartOptions,
+    targetElement: "chart-container-active",
+    series: [
       {
-        name: 'Active Cases',
+        name: "Active Cases",
         points: chartData.map((data) => ({
           name: data.country,
           y: parseInt(data.active),
         })),
       },
     ],
-    xAxis: {
-      labelText: 'Country',
-    },
-    yAxis: {
-      labelText: 'Number of Cases',
-    },
-    legend: {
-      template: '%name',
-      position: 'bottom',
-    },
   };
-  new JSC.Chart(chartOptions);
+  new JSC.Chart({ ...activeChartOptions, title_label_text: "Active Cases" });
 }
 
 </script>
