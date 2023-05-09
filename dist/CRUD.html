@@ -1,171 +1,676 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link rel="stylesheet" href="./crud.css">
-    <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<!-- Latest compiled JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
-
-
-    <title>COVID-19 Deaths and Cases</title>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">TRACEZONE</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="dataset.html"><i class="fas fa-chevron-left"></i>
-                    </a>
-                   
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="home.html">Home</a>
-              </li>
-             
-            </ul>
-          </div>
-        </div>
-      </nav>
-      
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jscharting.com/latest/jscharting.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <script src="chart1.js"></script>
+    <script src="chart2.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+    
+    <link rel="stylesheet" href="dataset.css">
+    <title>COVID CHARTS</title>
 </head>
-<!---TABLE START-->
-<body>
-  <div class="body">
-        <div class=" cont">
-    <h1 class="title">COVID-19 Deaths and Cases</h1>
-          <a href="#popup" class="button" id="addSong" >
-            <span>Add Data</span>
-          </a>
-        </div>
-    <table>
-      <thead>
-        <th>Country</th>
-        <th>Total Cases</th>
-        <th>Total Deaths</th>
-        <th>Total Recovered</th>
-        <th>Total Tests</th>
-        <th>Active Cases</th>
-        <th>Population</th>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-</div> 
 
-     
-<!-- Modal -->
-<div class ="popup-form" id="popup">
-  <div class="wrapper">
-    <h2>Please Fill up the Form</h2>
-    <a href ="#Contact" class="close">&times;</a>
-    <div class="form">
-      <div class="form-container">
+<body>
+    <div class="container">
+        <div class="topbar">
+            <div class="logo">
+                <h2>TRACEZONE</h2>
+            </div>
+          </div>
+          
+         
+        <div class="sidebar">
+            <ul>
+                <li>
+                    <a href="index.html">
+                        <i class="fas fa-th-large"></i>
+                        <div>HOME</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <div>COVID-19 CASES</div>
+                    </a>
+                </li>
+                <li>
+                   
+                
+                 </a>
+                </li>
+            </ul>
+        </div>
+        <div class="main">
+          <div class="cards">
+                <div class="card">
+                    
+                    <div class="card-content">
+                        <div class="number" id="Tdeaths"></div>
+                        <div class="card-name">Deaths Worldwide</div>
+                        
+                    </div>
+                    <div class="icon-box">
+                        <i class="fas fa-tombstone"></i>
+                    </div>
+                </div>
+                <div class="card">
+                    
+                    <div class="card-content">
+                        <div class="number" id="Trecovered"></div>
+                        <div class="card-name">Recovered Worldwide</div>
+                    
+                    </div>
+                    <div class="icon-box">
+                        <i class="fas fa-notes-medical"></i>
+                    </div>
+                </div>
+                <div class="card">
+                    
+                    <div class="card-content">
+                        <div class="number" id="Tcases"></div>
+                        <div class="card-name">Cases Worldwide</div>
+                    
+                    </div>
+                    <div class="icon-box">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                </div>
+                <div class="card">
+                
+                    <div class="card-content">
+                        <div class="number" id="Tactive"></div>
+                        <div class="card-name">Active Cases Worldwide</div>
+                    
+                    </div>
+                    <div class="icon-box">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                </div>
+            </div>
+          <div class="charts">
+            <div class="chart">
+                <h2>COVID-19 CASES WORLDWIDE</h2>
+
+                <button id="add-button" type="button">Add Data</button>
+    <div id="add-form-modal" class="modal">
+      <div class="modal-content">
+        <h2>Add Data</h2>
         <form>
-          <label for="Country" class="form-label" required>Country</label>
-          <input type="text" placeholder="Name of Country" class="form-control" id="country" required>
-          <label for="Cases" class="form-label" required>Total Cases</label>
-          <input type="text" placeholder="# of Cases" class="form-control" id="Cases" required>
-          <label for="Population" class="form-label" required>Population</label>
-          <input type="text" placeholder="Population #" class="form-control" id="Population" required>
-          <label for="Deaths" class="form-label" required>Deaths</label>
-          <input type="text" placeholder="# of Deaths" class="form-control" id="Deaths" required>
-          <label for="Active" class="form-label" required>Active Cases</label>
-          <input type="text" placeholder="# of Active Cases" class="form-control" id="Active" required>
-          <label for="Recovered" class="form-label" required>Recovered Cases</label>
-          <input type="text" placeholder="# of Recovered Cases" class="form-control" id="Recovered" required>
-          <label for="Test" class="form-label" required>Tests</label>
-          <input type="text" placeholder="# of Tests" class="form-control" id="Test" required>
-          <input type="hidden" id="covid">
-          <button type="submit" id="submit" class="button">Submit</button>
+          <label for="country">Country:</label>
+          <input type="text" id="country" name="country" />
+          <label for="cases">Total Cases:</label>
+          <input type="text" id="cases" name="cases" />
+          <label for="deaths">Total Deaths:</label>
+          <input type="text" id="deaths" name="deaths" />
+          <label for="recovered">Total Recovered:</label>
+          <input type="text" id="recovered" name="recovered" />
+          <label for="active">Active Cases:</label>
+          <input type="text" id="active" name="active" />
+          <button id="button" type="button" onclick="addData()">Add Data</button>
+          <button id="button" type="button" onclick="closeAddForm()">Cancel</button>
         </form>
       </div>
     </div>
-  </div>
-</div>
-
-
-
-
-            
-
     
-</body>
+    <input type="text" id="search-input" autocomplete="off" placeholder="Search for a country...">
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Country</th>
+          <th>Total Cases</th>
+          <th>Total Deaths</th>
+          <th>Total Recovered</th>
+          <th>Active Cases</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="covid-cases">
+      </tbody>
+    </table>
+    <div class="pagination">
+      <button id="prev-btn" onclick="prevPage()" disabled>Previous</button>
+      <button id="next-btn" onclick="nextPage()">Next</button>
+    </div>
+    
+    
+    <div id="edit-form" class="modal">
+      <div class="modal-content">
+        <h2>Edit Case</h2>
+        <form>
+          <input type="hidden" id="edit-id" />
+          <label for="edit-country">Country:</label>
+          <input type="text" id="edit-country" name="country" />
+          <label for="edit-cases">Total Cases:</label>
+          <input type="text" id="edit-cases" name="cases" />
+          <label for="edit-deaths">Total Deaths:</label>
+          <input type="text" id="edit-deaths" name="deaths" />
+          <label for="edit-recovered">Total Recovered:</label>
+          <input type="text" id="edit-recovered" name="recovered" />
+          <label for="edit-active">Active Cases:</label>
+          <input type="text" id="edit-active" name="active" />
+          <button type="button" onclick="submitEditForm()">Update Data</button>
+          <button type="button" onclick="cancelEditForm()">Cancel</button>
+        </form>
+      </div>
+    </div>
+      </div>
+      
+      <div class="chart">
+      <div class="slideshow-container">
+        <div class="slide">
+          <h2>Total Cases</h2>
+          <div class="graph">
+            <div id="chart-container-cases" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+          </div>
+        </div>
+        <div class="slide">
+          <h2>Total Deaths</h2>
+          <div class="graph">
+            <div id="chart-container-deaths" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+          </div>
+        </div>
+        <div class="slide">
+          <h2>Total Recovered</h2>
+          <div class="graph">
+            <div id="chart-container-recovered" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+          </div>
+        </div>
+        <div class="slide">
+          <h2>Active Cases</h2>
+          <div class="graph">
+            <div id="chart-container-active" style="width: 70%; height: 300px; margin: 2rem 0;"></div>
+          </div>
+        </div>
+        
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
+      </div>
+      </div>
+      
 
-<script src = "script.js" type="module">
-     // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
-  import { getFirestore, collection, addDoc, connectFirestoreEmulator, query,  getDocs, getDoc, updateDoc, setDoc, doc, onSnapshot, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <script>
+      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyCaXgBZcBkfZRF5X-YPNFhvY-C7ufceAWg",
+        authDomain: "ababonfirebase.firebaseapp.com",
+        databaseURL: "https://ababonfirebase-default-rtdb.firebaseio.com",
+        projectId: "ababonfirebase",
+        storageBucket: "ababonfirebase.appspot.com",
+        messagingSenderId: "809851666126",
+        appId: "1:809851666126:web:ef2f47cb874fd27380da9f",
+        measurementId: "G-DB5B08LYHE"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-apiKey: "AIzaSyBet-_DiY9gCkFcYKJFJEmK19Gtjvyaf5Y",
-authDomain: "ababon-babanto-cs1.firebaseapp.com",
-projectId: "ababon-babanto-cs1",
-storageBucket: "ababon-babanto-cs1.appspot.com",
-messagingSenderId: "902696087277",
-appId: "1:902696087277:web:1c862140b65b223fabe6e4",
-measurementId: "G-23607BRBTR"
-};
+      function showAlert(message) {
+        Swal.fire({
+          title: 'Success',
+          text: message,
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+      }
+ 
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+      
+      // Add data to Firestore
+      const addButton = document.getElementById("add-button");
+const addFormModal = document.getElementById("add-form-modal");
 
-  
-  console.log(app);
-  const db = getFirestore(app);
-  connectFirestoreEmulator(db,'localhost', 8080);
-
-  // Get a reference to the form element
-const form = document.getElementById("form");
-
-  function submitData(e) {
-  e.preventDefault();
-  const country = getInputValue("country");
-  const cases = getInputValue("Cases");
-  const population = getInputValue("Population");
-  const deaths = getInputValue("Deaths");
-  const active = getInputValue("Active");
-  const recovered = getInputValue("Recovered");
-  const tests = getInputValue("Test");
-  
-  // Add the data to Firestore database
-  const db = getFirestore();
-  addDoc(collection(db, "covid-data"), {
-    country,
-    cases,
-    population,
-    deaths,
-    active,
-    recovered,
-    tests
-  })
-  .then(() => {
-    console.log("Data added successfully");
-    togglePopup();
-    fetchData();
-  })
-  .catch((error) => {
-    console.error("Error adding data: ", error);
-  });
+function openAddForm() {
+  addFormModal.style.display = "block";
 }
 
-  
+function closeAddForm() {
+  addFormModal.style.display = "none";
+}
+
+addButton.addEventListener("click", openAddForm);
+
+
+
+// Add data to Firestore
+function addData() {
+  const country = document.getElementById("country").value;
+  const cases = document.getElementById("cases").value;
+  const deaths = document.getElementById("deaths").value;
+  const recovered = document.getElementById("recovered").value;
+  const active = document.getElementById("active").value;
+  db.collection("covid-cases")
+    .add({
+      country: country,
+      cases: cases,
+      deaths: deaths,
+      recovered: recovered,
+      active: active,
+    })
+    .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+      showAlert("New data successfully added.");
+      document.getElementById("country").value = "";
+      document.getElementById("cases").value = "";
+      document.getElementById("deaths").value = "";
+      document.getElementById("recovered").value = "";
+      document.getElementById("active").value = "";
+    })
+    .catch((error) => {
+      console.error("Error adding document: ", error);
+    });
+}
+
+// Show edit form
+function showEditForm(id, country, cases, deaths, recovered, active) {
+  document.getElementById("edit-form").style.display = "block";
+  document.getElementById("edit-id").value = id;
+  document.getElementById("edit-country").value = country;
+  document.getElementById("edit-cases").value = cases;
+  document.getElementById("edit-deaths").value = deaths;
+  document.getElementById("edit-recovered").value = recovered;
+  document.getElementById("edit-active").value = active;
+}
+
+// Submit the edit form
+function submitEditForm() {
+  const id = document.getElementById("edit-id").value;
+  const country = document.getElementById("edit-country").value;
+  const cases = document.getElementById("edit-cases").value;
+  const deaths = document.getElementById("edit-deaths").value;
+  const recovered = document.getElementById("edit-recovered").value;
+  const active = document.getElementById("edit-active").value;
+  updateData(id, { country: country, cases: cases, deaths: deaths, recovered: recovered, active: active });
+  document.getElementById("edit-form").style.display = "none";
+  clearEditForm();
+}
+
+// Cancel the edit form
+function cancelEditForm() {
+  document.getElementById("edit-form").style.display = "none";
+  clearEditForm();
+}
+
+// Clear the edit form
+function clearEditForm() {
+  document.getElementById("edit-id").value = "";
+  document.getElementById("edit-country").value = "";
+  document.getElementById("edit-cases").value = "";
+  document.getElementById("edit-deaths").value = "";
+  document.getElementById("edit-recovered").value = "";
+  document.getElementById("edit-active").value = "";
+}
+
+              // Update data in Firestore
+              function updateData(id, data) {
+                db.collection("covid-cases")
+                  .doc(id)
+                  .update(data)
+                  .then(() => {
+                    console.log("Document updated");
+                    showAlert("Edit data successfully.");
+                  })
+                  
+                  .catch((error) => {
+                    console.error("Error updating document: ", error);
+                  });
+              }
+        
+              // Delete data from Firestore
+              function deleteData(id) {
+                db.collection("covid-cases")
+                  .doc(id)
+                  .delete()
+                  .then(() => {
+                    console.log("Document deleted");
+                    showAlert("Data deleted successfully.");
+                  })
+                  .catch((error) => {
+                    console.error("Error deleting document: ", error);
+                  });
+                }
+        
+              // Get data from Firestore
+              let currentPage = 1;
+const rowsPerPage = 10;
+
+function updateTableDisplay() {
+  const covidCasesTable = document.getElementById("covid-cases");
+  for (let i = 0; i < covidCasesTable.rows.length; i++) {
+    if (i >= (currentPage - 1) * rowsPerPage && i < currentPage * rowsPerPage) {
+      covidCasesTable.rows[i].style.display = "table-row";
+    } else {
+      covidCasesTable.rows[i].style.display = "none";
+    }
+  }
+  updatePaginationButtons();
+}
+
+function updatePaginationButtons() {
+  const covidCasesTable = document.getElementById("covid-cases");
+  const prevButton = document.getElementById("prev-btn");
+  const nextButton = document.getElementById("next-btn");
+
+  if (currentPage === 1) {
+    prevButton.disabled = true;
+  } else {
+    prevButton.disabled = false;
+  }
+
+  if (currentPage * rowsPerPage >= covidCasesTable.rows.length) {
+    nextButton.disabled = true;
+  } else {
+    nextButton.disabled = false;
+  }
+}
+
+function nextPage() {
+  currentPage++;
+  updateTableDisplay();
+}
+
+function prevPage() {
+  currentPage--;
+  updateTableDisplay();
+}
+
+
+
+let currentSlide = 0;
+const slides = document.getElementsByClassName("slide");
+
+showSlide(currentSlide);
+
+function showSlide(n) {
+  slides[currentSlide].style.display = "none";
+  currentSlide = (n + slides.length) % slides.length;
+  slides[currentSlide].style.display = "block";
+}
+
+function changeSlide(n) {
+  showSlide(currentSlide + n);
+}
+
+              db.collection("covid-cases").onSnapshot((querySnapshot) => {
+  const covidCasesTable = document.getElementById("covid-cases");
+  covidCasesTable.innerHTML = "";
+  const chartData = [];
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    chartData.push({ country: data.country, cases: data.cases, deaths: data.deaths, recovered: data.recovered, active: data.active });
+    const row = document.createElement("tr");
+    const countryCell = document.createElement("td");
+    const casesCell = document.createElement("td");
+    const deathsCell = document.createElement("td");
+    const recoveredCell = document.createElement("td");
+    const activeCell= document.createElement("td");
+    const actionsCell = document.createElement("td");
+    const updateButton = document.createElement("button");
+    const deleteButton = document.createElement("button");
+    countryCell.textContent = data.country;
+    casesCell.textContent = data.cases;
+    deathsCell.textContent = data.deaths;
+    recoveredCell.textContent = data.recovered;
+    activeCell.textContent = data.active;
+    updateButton.textContent = "Update";
+    deleteButton.textContent = "Delete";
+    updateButton.addEventListener("click", () => {
+      showEditForm(doc.id, data.country, data.cases);
+    });
+    deleteButton.addEventListener("click", () => {
+      deleteData(doc.id);
+    });
+    actionsCell.appendChild(updateButton);
+    actionsCell.appendChild(deleteButton);
+    row.appendChild(countryCell);
+    row.appendChild(casesCell);
+    row.appendChild(deathsCell);
+    row.appendChild(recoveredCell);
+    row.appendChild(activeCell);
+    row.appendChild(actionsCell);
+    covidCasesTable.appendChild(row);
+  });
+  renderChart(chartData);
+  updateTableDisplay();
+});
+
+function renderChart(chartData) {
+  const baseChartOptions = {
+    type: 'bar',
+    xAxis: {
+      labelText: 'Country',
+    },
+    yAxis: {
+      labelText: 'Number of Cases',
+    },
+    legend: {
+      visible: false,
+    },
+    tooltip: '<b>%seriesName</b><br>%name: {%yValue:.0%}',
+  };
+  const casesChartOptions = {
+    ...baseChartOptions,
+    targetElement: 'chart-container-cases',
+    series: [
+      {
+        name: 'Total Cases',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.cases.replace(/,/g, "")),
+        })),
+      },
+    ],
+    defaultPoint: {
+      color: '#4a90e2',
+    },
+  };
+  new JSC.Chart({ ...casesChartOptions, title_label_text: "" });
+
+
+  const deathsChartOptions = {
+    ...baseChartOptions,
+    targetElement: 'chart-container-deaths',
+    series: [
+      {
+        name: 'Total Deaths',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.deaths.replace(/,/g, "")),
+        })),
+      },
+    ],
+    defaultPoint: {
+      color: '#e74c3c',
+    },
+  };
+  new JSC.Chart({ ...deathsChartOptions, title_label_text: "" });
+
+
+  const recoveredChartOptions = {
+    ...baseChartOptions,
+    targetElement: 'chart-container-recovered',
+    series: [
+      {
+        name: 'Total Recovered',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.recovered.replace(/,/g, "")),
+        })),
+      },
+    ],
+    defaultPoint: {
+      color: '#27ae60',
+    },
+  };
+  new JSC.Chart({ ...recoveredChartOptions, title_label_text: "" });
+
+  const activeChartOptions = {
+    ...baseChartOptions,
+    targetElement: 'chart-container-active',
+    series: [
+      {
+        name: 'Active Cases',
+        points: chartData.map((data) => ({
+          name: data.country,
+          y: parseInt(data.active.replace(/,/g, "")),
+        })),
+      },
+    ],
+    defaultPoint: {
+      color: '#f39c12',
+    },
+  };
+  new JSC.Chart({ ...activeChartOptions, title_label_text: "" });
+}
+
+$(document).ready(function(){
+  $('.slider').slick({
+    dots: true,
+    infinite: true,
+    speed: 500,
+    fade: true,
+    cssEase: 'linear'
+  });
+});
+
+// Get the input field and table body elements
+const input = document.getElementById("search-input");
+  const tableBody = document.getElementById("covid-cases");
+
+  // Add an event listener to the input field that filters the table on each keystroke
+  input.addEventListener("keyup", function() {
+    const filter = input.value.toUpperCase();
+    const rows = tableBody.getElementsByTagName("tr");
+    for (let i = 0; i < rows.length; i++) {
+      const country = rows[i].getElementsByTagName("td")[0];
+      if (country) {
+        const text = country.textContent.toUpperCase();
+        if (text.includes(filter)) {
+          rows[i].style.display = "";
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+  });
+
+// Get ID
+const totalDisplay = document.getElementById("Tdeaths");
+
+// Total Deaths Worldwide
+db.collection('covid-cases').get().then((querySnapshot) => {
+  let totalDeaths = 0;
+
+  querySnapshot.forEach((doc) => {
+    const deaths = doc.data()['deaths'];
+    if (deaths) {
+      const deathsWithoutCommas = deaths.replace(/,/g, "");
+      totalDeaths += parseInt(deathsWithoutCommas);
+    }
+  });
+
+  let formattedTotal = "";
+  if (totalDeaths >= 1000000) {
+    formattedTotal = (totalDeaths / 1000000).toFixed(1) + "M";
+  } else {
+    formattedTotal = totalDeaths.toLocaleString();
+  }
+
+  console.log(`Deaths Worldwide: ${formattedTotal}`);
+
+  totalDisplay.innerHTML = `${formattedTotal}`;
+}).catch((error) => {
+  console.log(`Error getting documents: ${error}`);
+});
+
+
+// Get ID
+const totalDisplayCase = document.getElementById("Tcases");
+
+// Total Cases Worldwide
+db.collection('covid-cases').get().then((querySnapshot) => {
+  let totalCases = 0;
+
+  querySnapshot.forEach((doc) => {
+    const cases = doc.data()['cases'];
+    if (cases) {
+      const casesWithoutCommas = cases.replace(/,/g, "");
+      totalCases += parseInt(casesWithoutCommas);
+    }
+  });
+
+  const totalCasesInMillions = (totalCases / 1000000).toFixed(2);
+  console.log(`Cases Worldwide: ${totalCasesInMillions}M`);
+
+  totalDisplayCase.innerHTML = `${totalCasesInMillions}M`;
+}).catch((error) => {
+  console.log(`Error getting documents: ${error}`);
+});
+
+// Get ID
+const totalDisplayRecovered = document.getElementById("Trecovered");
+
+// Total Recovered Worldwide
+db.collection('covid-cases').get().then((querySnapshot) => {
+  let totalRecovered = 0;
+
+  querySnapshot.forEach((doc) => {
+    const recovered = doc.data()['recovered'];
+    if (recovered) {
+      const recoveredWithoutCommas = recovered.replace(/,/g, "");
+      totalRecovered += parseInt(recoveredWithoutCommas);
+    }
+  });
+
+  const totalRecoveredInMillions = (totalRecovered / 1000000).toFixed(2);
+  console.log(`Recovered Worldwide: ${totalRecoveredInMillions}M`);
+
+  totalDisplayRecovered.innerHTML = `${totalRecoveredInMillions}M`;
+}).catch((error) => {
+  console.log(`Error getting documents: ${error}`);
+});
+
+
+// Get ID
+const totalDisplayActive = document.getElementById("Tactive");
+
+// Total Active Cases Worldwide
+db.collection('covid-cases').get().then((querySnapshot) => {
+  let totalActive = 0;
+
+  querySnapshot.forEach((doc) => {
+    const active = doc.data()['active'];
+    if (active) {
+      const activeWithoutCommas = active.replace(/,/g, "");
+      totalActive += parseInt(activeWithoutCommas);
+    }
+  });
+
+  const totalActiveInMillions = (totalActive / 1000000).toFixed(2);
+  console.log(`Active Cases Worldwide: ${totalActiveInMillions}M`);
+
+  totalDisplayActive.innerHTML = `${totalActiveInMillions}M`;
+}).catch((error) => {
+  console.log(`Error getting documents: ${error}`);
+});
+
 </script>
+</body>
 </html>
+        
